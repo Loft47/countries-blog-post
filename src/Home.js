@@ -1,7 +1,8 @@
 import React from 'react'
+import CountriesList from './CountriesList';
 
 const Home = () => (
-  <div>Hello, world!</div>
+  <CountriesList />
 );
 
 export default Home
