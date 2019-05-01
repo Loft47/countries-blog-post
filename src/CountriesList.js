@@ -1,5 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import CountriesListItem from './CountriesListItem';
+import useFetchCountries from './useFetchCountries';
+import isMostPopulous from './utils';
 
 const wrapperStyle = {
   display: 'inline-grid',
@@ -9,43 +11,19 @@ const wrapperStyle = {
   width: '100%'
 };
 
-class CountriesList extends Component {
-  state = {
-    countries: []
-  };
+const CountriesList = () => {
+  const countries = useFetchCountries();
 
-  componentDidMount() {
-    this.fetchCountries()
-  }
-
-  render() {
-    return (
-      <div style={wrapperStyle}>
-        {this.state.countries.map(country => (
-          <CountriesListItem
-            key={country.name}
-            country={country}
-            isMostPopulous={this.isMostPopulous(country, this.state.countries)} />
-        ))}
-      </div>
-    )
-  }
-
-  fetchCountries = () => {
-    const url = 'https://restcountries.eu/rest/v2/region/americas';
-
-    fetch(url)
-      .then((data) => (
-        data.json()
-      ))
-      .then(countries => {
-        this.setState({countries})
-      })
-  };
-
-  isMostPopulous = (country, countries) => {
-    return countries.every(c => country.population >= c.population)
-  };
-}
+  return (
+    <div style={wrapperStyle}>
+      {countries.map(country => (
+        <CountriesListItem
+          key={country.name}
+          country={country}
+          isMostPopulous={isMostPopulous(country, countries)}/>
+      ))}
+    </div>
+  )
+};
 
 export default CountriesList

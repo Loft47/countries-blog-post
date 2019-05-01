@@ -1,34 +1,17 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
+import useFetchCountries from './useFetchCountries';
+import isMostPopulous from './utils';
 
-class CountryDetail extends Component {
-  state = {
-    country: {},
-    countries: []
-  };
+const CountryDetail = (props) => {
+  const [country, setCountry] = useState({});
 
-  componentDidMount() {
-    this.fetchCountry(this.props.match.params.name);
-    this.fetchCountries()
-  }
+  useEffect(() => {
+    fetchCountry(props.match.params.name)
+  }, [props.match.params.name]);
 
-  render() {
-    const {country, countries} = this.state;
+  const countries = useFetchCountries();
 
-    return (
-      <div style={{display: 'flex'}}>
-        <div style={{width: '300px', marginRight: '20px'}}>
-          <img style={{width: '100%'}} src={this.state.country.flag} alt="Flag"/>
-        </div>
-        <div>
-          <h1>{country.name}</h1>
-          <h2>Region: <em>{country.subregion}</em></h2>
-          {this.isMostPopulous(country, countries) && (<h3>The most populous country in Americas!</h3>)}
-        </div>
-      </div>
-    )
-  }
-
-  fetchCountry = (name) => {
+  const fetchCountry = (name) => {
     const url = `https://restcountries.eu/rest/v2/name/${name}`;
 
     fetch(url)
@@ -37,25 +20,23 @@ class CountryDetail extends Component {
       ))
       .then(json => {
         const country = json[0];
-        this.setState({country})
+        setCountry(country)
       })
   };
 
-  fetchCountries = () => {
-    const url = 'https://restcountries.eu/rest/v2/region/americas';
+  return (
+    <div style={{display: 'flex'}}>
+      <div style={{width: '300px', marginRight: '20px'}}>
+        <img style={{width: '100%'}} src={country.flag} alt="Flag"/>
+      </div>
+      <div>
+        <h1>{country.name}</h1>
+        <h2>Region: <em>{country.subregion}</em></h2>
+        {isMostPopulous(country, countries) && (<h3>The most populous country in Americas!</h3>)}
+      </div>
+    </div>
+  )
 
-    fetch(url)
-      .then((data) => (
-        data.json()
-      ))
-      .then(countries => {
-        this.setState({countries})
-      })
-  };
-
-  isMostPopulous = (country, countries) => {
-    return countries.every(c => country.population >= c.population)
-  };
-}
+};
 
 export default CountryDetail
